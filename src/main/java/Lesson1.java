@@ -24,20 +24,15 @@ public class Lesson1 {
 
         // простые числа
         StringBuilder sb = new StringBuilder("1");
-        boolean chk;
         for (int i = 2; i < 100; i++) {
-            chk = true;
-            for (int j = 2; j < i; j++) {
-                if ((i % j) == 0) {
-                    chk = false;
-                    break;
+            for (int j = 2; (j <= i) && (i==j || (i % j) != 0); j++) {
+                if (i==j) {
+                    sb.append(" ");
+                    sb.append(i);
                 }
             }
-            if (chk) {
-                sb.append(" ");
-                sb.append(i);
-            }
         }
+
         System.out.println(sb.toString());
 
         // последовательность Фибоначчи
@@ -188,10 +183,10 @@ public class Lesson1 {
 
         switch (n) {
             case 1:
-                System.out.println(p1);
+                System.out.println("0");
                 break;
             case 2:
-                System.out.println(p2);
+                System.out.println("0 1");
                 break;
             default:
                 StringBuilder sb = new StringBuilder("0 1");
