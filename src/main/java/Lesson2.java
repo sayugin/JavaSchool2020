@@ -28,27 +28,21 @@ import java.util.stream.Stream;
 // лень делать кучу файлов, так что реализую все классы в одном пакете
 interface Command {
     String getName();
-    boolean execute();  // не хотел возвращать значение, но не придумал как без него реализовать exit
+    void execute();
 }
 
 abstract class CommandImpl implements Command {
     private String name;
-    private boolean isTerminal;
 
     public CommandImpl(String name, boolean isTerminal) {
         this.name = name;
-        this.isTerminal = isTerminal;
     }
 
     public String getName() {
         return name;
     }
 
-    public boolean isTerminal() {
-        return isTerminal;
-    }
-
-    public abstract boolean execute();
+    public abstract void execute();
 }
 
 class CommandTime extends CommandImpl {
@@ -57,9 +51,8 @@ class CommandTime extends CommandImpl {
         super("time", false);
     }
 
-    public boolean execute() {
+    public void execute() {
         System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH:mm:ss")));
-        return isTerminal();
     }
 }
 
@@ -69,9 +62,8 @@ class CommandDate extends CommandImpl {
         super("date", false);
     }
 
-    public boolean execute() {
+    public void execute() {
         System.out.println(LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-        return isTerminal();
     }
 }
 
@@ -81,8 +73,8 @@ class CommandExit extends CommandImpl {
         super("exit", true);
     }
 
-    public boolean execute() {
-        return isTerminal();
+    public void execute() {
+        System.exit(0);
     }
 }
 
@@ -97,14 +89,13 @@ public class Lesson2 {
         commands = Stream.of(new CommandTime(), new CommandDate(), new CommandExit()).collect(Collectors.toMap(c -> c.getName(), c -> c));
 
         scanner = new Scanner(System.in);
-        boolean isTerminalCommand = false;
 
-        while (!isTerminalCommand) {
+        while (true) {
             System.out.print("Жду команду > ");
             String s = scanner.nextLine().toLowerCase().trim();
 
             if (commands.containsKey(s))
-                isTerminalCommand = commands.get(s).execute();
+                commands.get(s).execute();
             else
                 System.out.println("WTF?");
         }
