@@ -1,5 +1,4 @@
 import java.util.*;
-import java.util.stream.Collectors;
 
 /*
 1. Создать лист из своих объектов (10-15 элементов в списке). Добавить, удалить и т.д.
@@ -68,36 +67,38 @@ public class Lesson4 {
     };
 
     public static void main(String[] args) {
-        List<Book> list = new ArrayList(Arrays.asList(arr)); // свой список
+        System.out.println("***************** 1 - 3 ****************");
+        @SuppressWarnings("unchecked") List<Book> list = new ArrayList(Arrays.asList(arr)); // свой список
         list.add(new Book("Wells Herbert","The Time Machine")); // добавил
         list.add(new Book("Wells Herbert","The Time Machine")); // добавил дубль
         list.set(list.size()-1, new Book("Wells Herbert","The War of the Worlds")); // заменил дубль
         list.add(new Book("Wells Herbert","The Time Machine")); // добавил дубль снова
         list.removeIf(b -> b.getAuthor().matches("D(.)+")); // удалил Достоевского с Конан Дойлем
-        list.stream().forEach(System.out::println); // вывел список
+        list.forEach(System.out::println); // вывел список
 
+        System.out.println("***************** 4 ****************");
         // создал множество и перенес значения
-        Set<Book> set = new TreeSet<>((b1,b2) -> b1.getAuthor().concat(b1.getTitle()).compareTo(b2.getAuthor().concat(b2.getTitle())));
+        Set<Book> set = new TreeSet<>(Comparator.comparing(b -> b.getAuthor().concat(b.getTitle())));
+        
         set.addAll(list);
+        set.forEach(System.out::println);
 
+        System.out.println("***************** 5 ****************");
         int count1 = 0;
         int count2 = 0;
-
-        // обход через foreach
+        // обход через foreach и подсчет кол-ва книг с названием длиной до 15 символов
         for (Book b: set)
             if (b.getTitle().length() < 15)
                 count1++;
-
-        // обход через итератор
+        // обход через итератор и подсчет кол-ва книг с названием длиной свыше 15 символов
         Iterator<Book> iterator = set.iterator();
         while (iterator.hasNext())
             if (iterator.next().getTitle().length() >= 15)
                 count2++;
-
         // результаты
-        System.out.println(set);
         System.out.printf("total=%d, count1=%d, count2=%d%n", set.size(), count1, count2);
 
+        System.out.println("***************** 6 ****************");
         // удаление 3-го элемента
         iterator = set.iterator();
         int i=0;
@@ -107,19 +108,24 @@ public class Lesson4 {
             if (i == 3)
                 iterator.remove();
         }
-        System.out.println(set);
+        set.forEach(System.out::println);
 
+        System.out.println("***************** 7 ****************");
         // создал мапу из сета
         Map<Book, Collection<Book>> map = new HashMap<>(set.size(), 0.9f);
         for (Book b: set)
             map.put(b, set);
+        map.forEach((k,v) -> System.out.printf("%s: %s%n",k,v.toString()));
 
-        // для каждого ключа сформировал список других книг того же автора
+        System.out.println("***************** 8 ****************");
+        // создал новую мапу с теми же ключами, в которой в качестве значений лежит кол-во других книг автора из первоначальной коллекции
+        Map<Book, Long> newMap = new HashMap<>();
         for (Map.Entry<Book, Collection<Book>> e: map.entrySet()) {
-            e.setValue(e.getValue().stream()
+            newMap.put(e.getKey(), e.getValue()
+                    .stream()
                     .filter(b -> b.getAuthor().equals(e.getKey().getAuthor()) && b != e.getKey())
-                    .collect(Collectors.toList()));
+                    .count());
         }
-        System.out.println(map);
+        newMap.forEach((k,v) -> System.out.printf("%s: %s%n",k,v.toString()));
     }
 }
