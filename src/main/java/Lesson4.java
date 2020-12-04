@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.stream.Collectors;
 
 /*
 1. Создать лист из своих объектов (10-15 элементов в списке). Добавить, удалить и т.д.
@@ -68,7 +69,7 @@ public class Lesson4 {
 
     public static void main(String[] args) {
         System.out.println("***************** 1 - 3 ****************");
-        @SuppressWarnings("unchecked") List<Book> list = new ArrayList(Arrays.asList(arr)); // свой список
+        List<Book> list = Arrays.asList(arr); // свой список
         list.add(new Book("Wells Herbert","The Time Machine")); // добавил
         list.add(new Book("Wells Herbert","The Time Machine")); // добавил дубль
         list.set(list.size()-1, new Book("Wells Herbert","The War of the Worlds")); // заменил дубль
@@ -127,5 +128,10 @@ public class Lesson4 {
                     .count());
         }
         newMap.forEach((k,v) -> System.out.printf("%s: %s%n",k,v.toString()));
+
+        System.out.println("***************** 7а ****************");
+        // по просьбе сенсея дополнительно создал мапу автор - набор книг
+        Map<String, List<Book>> newestMap = set.stream().collect(Collectors.groupingBy(Book::getAuthor));
+        newestMap.forEach((k,v) -> System.out.printf("%s: %s%n",k,v.toString()));
     }
 }
