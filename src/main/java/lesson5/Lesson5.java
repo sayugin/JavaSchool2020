@@ -95,24 +95,24 @@ public class Lesson5 {
         last5List.forEach(System.out::println);
 
         System.out.println("***** Last5a *****");
-        Extractor<LogEntry> extractor = (l,n) -> l.stream().sorted(Comparator.comparing(LogEntry::getCreated).reversed()).limit(n).collect(Collectors.toList());
-        extractor.filter(list,5).forEach(System.out::println);
+        Extractor<LogEntry> lastNExtractor = (l,n) -> l.stream().sorted(Comparator.comparing(LogEntry::getCreated).reversed()).limit(n).collect(Collectors.toList());
+        lastNExtractor.filter(list,5).forEach(System.out::println);
 
         System.out.println("***** First5 *****");
         List<LogEntry> first5List = new FirstNExtractor<>().filter(list, 5);
         first5List.forEach(System.out::println);
 
         System.out.println("***** First5a *****");
-        extractor = (l,n) -> l.stream().sorted(Comparator.comparing(LogEntry::getCreated)).limit(n).collect(Collectors.toList());
-        extractor.filter(list,5).forEach(System.out::println);
+        Extractor<LogEntry> firstNExtractor = (l,n) -> l.stream().sorted(Comparator.comparing(LogEntry::getCreated)).limit(n).collect(Collectors.toList());
+        firstNExtractor.filter(list,5).forEach(System.out::println);
 
         System.out.println("***** Sales *****");
         List<LogEntry> salesList = new SalesExtractor<>().filter(list, 5);
         salesList.forEach(System.out::println);
 
         System.out.println("***** SalesA *****");
-        extractor = (l,n) -> l.stream().filter(e -> e.getMessage().equals("Buy")).sorted(Comparator.comparing(LogEntry::getCreated).reversed()).limit(n).collect(Collectors.toList());
-        extractor.filter(list,5).forEach(System.out::println);
+        Extractor<LogEntry> salesExtractor = (l,n) -> l.stream().filter(e -> e.getMessage().equals("Buy")).sorted(Comparator.comparing(LogEntry::getCreated).reversed()).limit(n).collect(Collectors.toList());
+        salesExtractor.filter(list,5).forEach(System.out::println);
 
 
 
@@ -121,4 +121,6 @@ public class Lesson5 {
     private static Map<String, Long> aggregate(List<? extends LogEntry> list) {
         return list.stream().collect(groupingBy(LogEntry::getMessage, counting()));
     }
+
+
 }

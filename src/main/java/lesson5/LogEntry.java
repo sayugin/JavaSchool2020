@@ -2,9 +2,10 @@ package lesson5;
 
 import java.time.LocalDateTime;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class LogEntry {
-    private static long seq = 0L;
+    private static AtomicLong seq = new AtomicLong(0);
     private static final Object lock = new Object();
 
     private final long id;
@@ -17,12 +18,10 @@ public class LogEntry {
             Thread.sleep(new Random().nextInt(1000));
         } catch (InterruptedException e) {/*NOP*/}
 
-        // на всякий случай делаю синхронизацию чтобы не получить одинаковый ид в разных потоках, java.util.concurrent не использую ибо еще маленький
-        synchronized (lock) {
-            this.id = ++seq;
-            this.created = LocalDateTime.now();
-            this.message = message;
-        }
+        this.id = seq.addAndGet(1);
+        this.created = LocalDateTime.now();
+        this.message = message;
+
     }
 
     public long getId() {
