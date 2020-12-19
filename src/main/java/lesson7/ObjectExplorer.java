@@ -33,18 +33,19 @@ public class ObjectExplorer {
     }
 
     private static void exploreInterfaces() {
+        StringBuilder sb = new StringBuilder("interfaces:");
         Class<?> c = clazz;
-        List<Class<?>> interfaces= new ArrayList<>(Arrays.asList(c.getInterfaces()));
+        printInterfaces(Arrays.asList(c.getInterfaces()), sb);
         while ((c = c.getSuperclass()) != null)
-            interfaces.addAll(new ArrayList<>(Arrays.asList(c.getInterfaces())));
-        if (interfaces.size() > 0) {
-            StringBuilder sb = new StringBuilder("interfaces:");
-            for (Class<?> i : interfaces) {
-                sb.append('\n');
-                sb.append("  ");
-                sb.append(i.getName());
-            }
-            System.out.println(sb.toString());
+            printInterfaces(Arrays.asList(c.getInterfaces()), sb);
+        System.out.println(sb.toString());
+    }
+
+    private static void printInterfaces(List<Class<?>> interfaces, StringBuilder sb) {
+        for (Class<?> i : interfaces) {
+            sb.append('\n');
+            sb.append("  ");
+            sb.append(i.getName());
         }
     }
 
@@ -61,17 +62,20 @@ public class ObjectExplorer {
             sb.append("abstract ");
         if (Modifier.isStatic(modifiers))
             sb.append("static ");
+
         if (Modifier.isPrivate(modifiers))
             sb.append("private ");
-        if (Modifier.isProtected(modifiers))
+        else if (Modifier.isProtected(modifiers))
             sb.append("protected ");
-        if (Modifier.isPublic(modifiers))
+        else if (Modifier.isPublic(modifiers))
             sb.append("public ");
+
         return sb.toString();
     }
 
     private static void exploreParameter(Parameter p, StringBuilder sb){
-        sb.append(sb.toString().equals("") ? "" : ", ");
+        if (sb.length() != 0)
+            sb.append(", ");
         sb.append(p.getType().getSimpleName());
         sb.append(" ");
         sb.append(p.getName());
