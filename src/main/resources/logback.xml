@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="console"  class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{dd.MM.yyyy HH:mm:ss.SSS} [%thread] %-5level  %logger{20} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="student" class="ch.qos.logback.core.FileAppender">
+        <file>student.log</file>
+        <encoder>
+            <pattern>%d{dd.MM.yyyy HH:mm:ss.SSS} [%thread] %-5level  %logger{20} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="numberOfStudent" class="ch.qos.logback.core.FileAppender">
+        <file>numberOfStudent.log</file>
+        <encoder>
+            <pattern>%d{dd.MM.yyyy HH:mm:ss.SSS} [%thread] %-5level  %logger{20} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="debug">
+        <appender-ref ref="console" />
+    </root>
+
+    <Logger name="lesson10.logging.v1.StudentPrinter" level="INFO" additivity="false">
+        <appender-ref ref="student" />
+    </Logger>
+
+    <Logger name="lesson10.logging.v2.NumberOfStudentsPrinter" level="TRACE" additivity="false">
+        <appender-ref ref="numberOfStudent" />
+    </Logger>
+
+</configuration>

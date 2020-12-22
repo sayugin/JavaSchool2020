@@ -1,6 +1,5 @@
 package lesson10.logging.v2;
 import lesson10.logging.Student;
-import lesson10.logging.v1.StudentPrinter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,7 +8,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class NumberOfStudentsPrinter {
-    private static final Logger logger = LoggerFactory.getLogger(StudentPrinter.class);
+    private static final Logger logger = LoggerFactory.getLogger(NumberOfStudentsPrinter.class);
 
     public void printNumberOfAllStudentsPresent(List<Student> students) {
         //TODO Напечатать количество студентов, которые присутствовали на тесте (имеют оценку) с уровнем info
@@ -21,6 +20,5 @@ public class NumberOfStudentsPrinter {
         // Лог должен выводиться с уровнем debug
         Map<Integer, Long> map = students.stream().filter(s -> s.getResult() != null && (s.getResult() == 4 || s.getResult() == 5)).collect(Collectors.groupingBy(Student::getResult, Collectors.counting()));
         logger.debug("{} {}", "Кол-во студентов с оценками 4 и 5: ", map.values().stream().map(Object::toString).reduce("", (s1, s2) -> s1 + (s1.length() == 0 ? "" : " и ") + s2));
-
     }
 }
