@@ -7,29 +7,34 @@ package multithreading;
 */
 
 import lombok.SneakyThrows;
-import java.util.Random;
+
+import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Operation {
 
     @SneakyThrows
     public static void main(String[] args) {
-        final Account a = new Account(2000, "a");
-        final Account b = new Account(1000, "b");
-        Random rnd = new Random();
+        final Account a = new Account(5000, "Хоттабыч");
+        final Account b = new Account(3000, "Амаяк наш Акопян");
+        Set<Transfer> transfers = new HashSet<>();
 
-        System.err.printf("Initial balance: a = %d, b = %d%n", a.getBalance(), b.getBalance());
+        Transfer.needDeadlock(false);
+        Thread transferProducer = new Thread(() -> {
+            Random rnd = new Random();
+            for (int i = 0; i < 10; i++) {
+                transfers.add(new Transfer(a, b, rnd.nextInt(500)));
+            }
+        }); // это будет поток продюсер для третьей задачи, консьюмером будет сама операция
+        transferProducer.start();
+        transferProducer.join();
 
-        Transfer transfer1 = new Transfer(a, b, rnd.nextInt(500));
-        Transfer transfer2 = new Transfer(b, a, rnd.nextInt(500));
 
-        Thread t1 = new Thread(transfer1);
-        Thread t2 = new Thread(transfer2);
-
-        t1.start();
-        t2.start();
-
-        Thread.sleep(3000);
-        t2.interrupt();
+        System.err.printf("Initial balance: %s = %d, %s = %d%n", a.getName(), a.getBalance(), b.getName(), b.getBalance());
+        ExecutorService service = Executors.newFixedThreadPool(3);
+        transfers.forEach(service::submit);
+        service.shutdown();
     }
 
 }

@@ -12,8 +12,10 @@ public class Transfer extends Thread {
 
     private static final AtomicInteger idGenerator = new AtomicInteger(1);
 
-    private static final int LOCK_WAIT_SEC = 2;
-    private static final int MAX_TRANSFER_SEC = 3;
+    private static boolean needDeadlock;
+
+    private static final int LOCK_WAIT_SEC = 3;
+    private static final int MAX_TRANSFER_SEC = 2;
 
     private final int transferId;
 
@@ -23,7 +25,6 @@ public class Transfer extends Thread {
 
     private final Random waitRandom = new Random();
 
-
     public Transfer(Account accFrom, Account accTo, int amount) {
         this.transferId = idGenerator.getAndIncrement();
         this.accFrom = accFrom;
@@ -31,10 +32,16 @@ public class Transfer extends Thread {
         this.amount = amount;
     }
 
+    public static void needDeadlock(boolean generateDeadlock) {
+        Transfer.needDeadlock = generateDeadlock;
+    }
+
     @Override
     public void run() {
-        //трах_тибидох_тибидох(); // рабочая процедура без дедлока
-        ахалай_махалай(); // а эта с дедлоком и с возможностью прерывания
+        if (needDeadlock)
+            ахалай_махалай();
+        else
+            трах_тибидох_тибидох();
     }
 
     @SneakyThrows
@@ -52,12 +59,14 @@ public class Transfer extends Thread {
                     }
                 }
                 else
-                    System.err.println("Ид = " + getTransferId() + ": блокировка однако");
+                    System.err.println("transferId = " + getTransferId() + ": блокировка счета " + accTo.getName());
 
             } finally {
                 accFrom.getLock().unlock();
             }
         }
+        else
+            System.err.println("transferId = " + getTransferId() + ": блокировка счета " + accFrom.getName());
     }
 
     private void ахалай_махалай() {
