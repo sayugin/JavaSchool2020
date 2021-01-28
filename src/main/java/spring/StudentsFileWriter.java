@@ -2,6 +2,7 @@ package spring;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -20,11 +21,18 @@ public class StudentsFileWriter implements StudentsWriter {
 
     private static final Logger logger = LoggerFactory.getLogger(StudentsFileWriter.class);
 
-    @Value("${students.writer.filename}")
+    private Map<String, Integer> students;
+
+    @Value("${students.file.filename}")
     private String fileName;
 
+    @Autowired
+    public StudentsFileWriter(Map<String, Integer> students) {
+        this.students = students;
+    }
+
     @Override
-    public void write(Map<String, Integer> students) {
+    public void write() {
         logger.debug("Пытаюсь записать файл " + fileName);
         try {
             Files.write(Paths.get(fileName), students.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue()).collect(Collectors.toList()), StandardCharsets.UTF_8);

@@ -9,6 +9,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 
+import java.util.Map;
+import java.util.TreeMap;
+
 @SpringBootApplication
 public class SpringApp implements CommandLineRunner {
 
@@ -22,6 +25,11 @@ public class SpringApp implements CommandLineRunner {
     public void run(String... args) {
         Grader grader = (Grader) context.getBean("grader");
         grader.handle();
+    }
+
+    @Bean
+    public Map<String, Integer> getMap() {
+        return new TreeMap<>();
     }
 
 }

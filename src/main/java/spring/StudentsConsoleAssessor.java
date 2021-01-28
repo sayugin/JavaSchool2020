@@ -18,11 +18,17 @@ public class StudentsConsoleAssessor implements StudentsAssessor {
     private static final Logger logger = LoggerFactory.getLogger(StudentsConsoleAssessor.class);
     private static final Scanner scanner = new Scanner(System.in);
 
+    private List<GradeValidator> validators;
+    private Map<String, Integer> students;
+
     @Autowired
-    List<GradeValidator> validators;
+    public StudentsConsoleAssessor(Map<String, Integer> students, List<GradeValidator> validators) {
+        this.validators = validators;
+        this.students = students;
+    }
 
     @Override
-    public void assess(Map<String, Integer> students) {
+    public void assess() {
         logger.debug("Считываю оценки с консоли");
         System.out.println("Скажи-ка мне, мил человек, свое мнение о следующих товарищах");
         for (String studentName: students.keySet()) {

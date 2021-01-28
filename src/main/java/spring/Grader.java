@@ -24,26 +24,19 @@ public class Grader {
     private StudentsWriter writer;
 
     @Autowired
-    public Grader(StudentsReader reader, @Lazy StudentsAssessor assessor, @Lazy StudentsWriter writer) {
+    public Grader(Map<String, Integer> students, StudentsReader reader, @Lazy StudentsAssessor assessor, @Lazy StudentsWriter writer) {
+        this.students = students;
         this.reader = reader;
         this.assessor = assessor;
         this.writer = writer;
     }
 
     public void handle() {
-        System.err.println("Для корректного запуска приложения нужно подправить параметры в application.properties");
-        System.err.println("Готовый файлик со списком студентов имеется в ресурсах, но можно сделать и свой");
-        System.err.println("Оценки вводятся с консоли и валидируются");
-        System.err.println("  - для всех студентов оценка должна быть в диапазоне от одного до пяти");
-        System.err.println("  - если попадется студент с именем Иосиф Виссарионович, то не уйдет без максимального балла");
-        System.err.print("Для продолжения нужно жмякнуть Enter");
-        new Scanner(System.in).nextLine();
-
         logger.info("Поехали");
-        students = reader.read();
+        reader.read();
         if (students.size() != 0) {
-            assessor.assess(students);
-            writer.write(students);
+            assessor.assess();
+            writer.write();
         }
         logger.info("Все, приехали");
     }
