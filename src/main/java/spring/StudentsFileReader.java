@@ -1,26 +1,24 @@
 package spring;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import spring.aspects.TimeLog;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Stream;
 
 
 @Component
+@Slf4j
 public class StudentsFileReader implements StudentsReader {
 
-    private static final Logger logger = LoggerFactory.getLogger(StudentsFileReader.class);
-
-    private Map<String, Integer> students;
+    private final Map<String, Integer> students;
 
     @Value("${students.file.filename}")
     private String fileName;
@@ -30,30 +28,52 @@ public class StudentsFileReader implements StudentsReader {
         this.students = students;
     }
 
+    @TimeLog
     @Override
     public void read() {
-        logger.debug("Пытаюсь прочитать файл " + fileName);
+        log.debug("Пытаюсь прочитать файл " + fileName);
         try {
-            Files.lines(Paths.get(fileName), StandardCharsets.UTF_8).forEach(this::parse);
+            getEntryStreamFromFile().forEach(e -> students.put(e.getKey(), e.getValue()));
         } catch (IOException e) {
-            logger.error("Ошибка при чтении файла: " + e);
+            log.error("Ошибка при чтении файла: " + e);
         }
-        logger.debug("... Готово");
+        log.debug("... Готово");
     }
 
-    private void parse(String line) {
+    @TimeLog
+    @Override
+    public Integer readLine(String studentName) {
+        log.debug("Пытаюсь прочитать из файла " + fileName + " оценку для " + studentName);
+        Integer result = null;
+        try {
+            OptionalInt grade = getEntryStreamFromFile().filter(e -> e.getKey().equals(studentName)).mapToInt(Map.Entry::getValue).findAny();
+            if (grade.isPresent())
+                result = grade.getAsInt();
+        } catch (IOException e) {
+            log.error("Ошибка при чтении файла: " + e);
+        }
+        log.debug("Прочитал: " + result);
+        return result;
+    }
+
+    private Map.Entry<String, Integer> parse(String line) {
         Object[] arr = Arrays.stream(line.split(":")).map(String::trim).toArray();
         String studentName = arr[0].toString();
         if (studentName.isEmpty()) {
-            logger.warn("Странный студент нынче пошел");
-            return;
+            log.warn("Странный студент нынче пошел");
+            return null;
         }
         try {
             Integer grade = arr.length == 1 ? null : Integer.valueOf(arr[1].toString());
-            students.put(studentName, grade);
+            return new AbstractMap.SimpleEntry<>(studentName, grade);
         } catch (NumberFormatException | ArrayIndexOutOfBoundsException e) {
-            students.put(studentName, null);
+            return new AbstractMap.SimpleEntry<>(studentName, null);
         }
+    }
 
+    private Stream<Map.Entry<String, Integer>> getEntryStreamFromFile() throws IOException {
+        return Files.lines(Paths.get(fileName), StandardCharsets.UTF_8)
+                .map(this::parse)
+                .filter(Objects::nonNull);
     }
 }
