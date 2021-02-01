@@ -32,4 +32,8 @@
         <appender-ref ref="numberOfStudent" />
     </Logger>
 
+    <Logger name="spring" level="DEBUG" additivity="false">
+        <appender-ref ref="console" />
+    </Logger>
+
 </configuration>
