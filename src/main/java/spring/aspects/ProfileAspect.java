@@ -29,7 +29,7 @@ public class ProfileAspect {
         long startMillis = System.currentTimeMillis();
         Object[] args = p.getArgs();
         Object retVal = p.proceed(args);
-        log.info("Время выполнения " + p.getSignature() + ": " + (System.currentTimeMillis()-startMillis));
+        log.info("Время выполнения {}: {}", p.getSignature(), (System.currentTimeMillis()-startMillis));
         return retVal;
     }
 }

@@ -31,11 +31,11 @@ public class StudentsFileReader implements StudentsReader {
     @TimeLog
     @Override
     public void read() {
-        log.debug("Пытаюсь прочитать файл " + fileName);
+        log.debug("Пытаюсь прочитать файл {}", fileName);
         try {
             getEntryStreamFromFile().forEach(e -> students.put(e.getKey(), e.getValue()));
         } catch (IOException e) {
-            log.error("Ошибка при чтении файла: " + e);
+            log.error("Ошибка при чтении файла: ", e);
         }
         log.debug("... Готово");
     }
@@ -43,16 +43,16 @@ public class StudentsFileReader implements StudentsReader {
     @TimeLog
     @Override
     public Integer readLine(String studentName) {
-        log.debug("Пытаюсь прочитать из файла " + fileName + " оценку для " + studentName);
+        log.debug("Пытаюсь прочитать из файла {} оценку для {}", fileName, studentName);
         Integer result = null;
         try {
             OptionalInt grade = getEntryStreamFromFile().filter(e -> e.getKey().equals(studentName)).mapToInt(Map.Entry::getValue).findAny();
             if (grade.isPresent())
                 result = grade.getAsInt();
         } catch (IOException e) {
-            log.error("Ошибка при чтении файла: " + e);
+            log.error("Ошибка при чтении файла: ", e);
         }
-        log.debug("Прочитал: " + result);
+        log.debug("Прочитал: {}", result);
         return result;
     }
 

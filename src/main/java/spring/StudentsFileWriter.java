@@ -33,11 +33,11 @@ public class StudentsFileWriter implements StudentsWriter {
     @TimeLog
     @Override
     public void write() {
-        log.debug("Пытаюсь записать файл " + fileName);
+        log.debug("Пытаюсь записать файл {}", fileName);
         try {
             Files.write(Paths.get(fileName), students.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue()).collect(Collectors.toList()), StandardCharsets.UTF_8);
         } catch (IOException e) {
-            log.error("Не удалось записать файл: " + e);
+            log.error("Не удалось записать файл: ", e);
         }
         log.debug("... Готово");
     }
